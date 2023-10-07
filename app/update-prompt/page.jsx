@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Form from '@components/Form';
 
 const UpdatePrompt = () => {
-  const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const promptId = searchParams.get("id");
@@ -13,6 +12,7 @@ const UpdatePrompt = () => {
     prompt: "",
     tag: ""
   });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const getPromptDetails = async () => {
@@ -27,38 +27,39 @@ const UpdatePrompt = () => {
     if(promptId) getPromptDetails();
   }, [promptId])
 
-//   const createPrompt = async (e) => {
-//     e.preventDefault();
-//     setSubmitting(true);
+  const updatePrompt = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
 
-//     try {
-//       const response = await fetch("/api/prompt/new", {
-//         method: "POST",
-//         body: JSON.stringify({
-//           prompt: post.prompt,
-//           userId: session?.user.id,
-//           tag: post.tag
-//         })
-//       });
+    if(!promptId) return alert("Prompt ID not found")
 
-//       if(response.ok) {
-//         router.push("/")
-//       };
+    try {
+      const response = await fetch(`/api/prompt/${promptId}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          prompt: post.prompt,
+          tag: post.tag
+        })
+      });
+
+      if(response.ok) {
+        router.push("/profile")
+      };
       
-//     } catch (error) {
-//       console.log(error);
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <Form 
-      type="Update"
+      type="Edit"
       post={post}
       setPost={setPost}
       submitting={submitting}
-      handleSubmit={() => {}}
+      handleSubmit={updatePrompt}
     />
   )
 }
